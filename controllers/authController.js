@@ -179,6 +179,34 @@ const registerUser5 = async (req, res) => {
     }
 }
 
+const signinUser = async (req, res) => {
+    try {
+        console.log("Signing in enters...");
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            return res.json({
+                error: 'Incorrect password or email'
+            });
+        }
+
+        const match = await comparePassword(password, user.password);
+        if (!match) {
+            return res.json({
+                error: 'Incorrect password or email'
+            });
+        }
+
+        user.logged_in = true;
+        await user.save();
+        res.json("Signed in successfuly");
+        console.log("Signing in exits...");
+    } catch (error) {
+        console.error('Error signing in the user:', error);
+    }
+}
+
 module.exports = {
     test,
     registerUser1,
@@ -186,4 +214,5 @@ module.exports = {
     registerUser3,
     registerUser4,
     registerUser5,
+    signinUser,
 }
