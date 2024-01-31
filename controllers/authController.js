@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const { hashPassword, comparePassword } = require('../helpers/auth');
+const jwt = require('jsonwebtoken');
 
 const monthMap = {
     'January': 0,
@@ -200,10 +201,27 @@ const signinUser = async (req, res) => {
 
         user.logged_in = true;
         await user.save();
-        res.json("Signed in successfuly");
+        jwt.sign({ email: user.email, first_name: user.first_name, last_name: user.last_name }, process.env.JWT_SECRET, {},
+            (err, token) => {
+                if (err) throw err
+                res.cookie('token', token).json(user);
+            })
         console.log("Signing in exits...");
     } catch (error) {
         console.error('Error signing in the user:', error);
+    }
+}
+
+const getProfile = (req, res) => {
+    const { token } = req.cookies;
+    console.log(token);
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
+            if (err) throw err
+            res.json(user);
+        })
+    } else {
+        res.json(null);
     }
 }
 
@@ -215,4 +233,5 @@ module.exports = {
     registerUser4,
     registerUser5,
     signinUser,
+    getProfile,
 }
