@@ -15,3 +15,4 @@ A possible front-end code is available at the following link: https://github.com
   then add a line that looks like this:
   MONGO_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/<database>
   Replace <username>, <database> with your MongoDB Atlas cluster credentials, and then replace <password> with the actual generated password for your MongoDB user.
+- In the terminal, navigate to the project directory and run the following command to install the required dependencies save in package.json: npm install
