@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
+const Cloth = require('../models/cloth');
 
 const monthMap = {
     'January': 0,
@@ -232,7 +233,7 @@ const addUser = async (req, res) => {
     try {
         console.log('Add User enters...');
         const { first_name, last_name, email, password, year, month, day, verification_code,
-        verified, role } = req.body;
+            verified, role } = req.body;
         const hashedPassword = await hashPassword(password);
         date_of_birth = new Date(year, monthMap[month], day);
 
@@ -248,6 +249,46 @@ const addUser = async (req, res) => {
     }
 }
 
+const getClothes = async (req, res) => {
+    try {
+        console.log('getClothes enters...');
+        const items = await Cloth.find({});
+        res.json(items);
+    } catch (error) {
+        console.error('Error fetching clothes:', error);
+    }
+    console.log('getClothes exits...');
+}
+
+const addCloth = async (req, res) => {
+    try {
+        console.log("addCloth enters...")
+        const { name, price, color, material, size, description, quantity, imageUrl, otherImagesUrl } = req.body;
+
+        const exists = await Cloth.findOne({ imageUrl: imageUrl });
+        if (exists) {
+            return res.json({
+                error: 'Cloth already exists'
+            });
+        }
+        const cloth = Cloth.create({
+            name: name,
+            price: price,
+            color: color,
+            material: material,
+            size: size,
+            description: description,
+            quantity: quantity,
+            imageUrl: imageUrl,
+            otherImagesUrl: otherImagesUrl
+        });
+        res.json(req.body);
+    } catch (error) {
+        console.error('Error adding cloth:', error);
+    }
+    console.log("addCloth exits...")
+}
+
 module.exports = {
     test,
     registerUser1,
@@ -258,4 +299,6 @@ module.exports = {
     signinUser,
     getProfile,
     addUser,
+    getClothes,
+    addCloth,
 }
