@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
+const Cloth = require('../models/cloth');
 
 const monthMap = {
     'January': 0,
@@ -201,7 +202,10 @@ const signinUser = async (req, res) => {
 
         user.logged_in = true;
         await user.save();
-        jwt.sign({ email: user.email, first_name: user.first_name, last_name: user.last_name }, process.env.JWT_SECRET, {},
+        jwt.sign({
+            email: user.email, first_name: user.first_name,
+            last_name: user.last_name, role: user.role
+        }, process.env.JWT_SECRET, {},
             (err, token) => {
                 if (err) throw err
                 res.cookie('token', token).json(user);
@@ -225,6 +229,66 @@ const getProfile = (req, res) => {
     }
 }
 
+const addUser = async (req, res) => {
+    try {
+        console.log('Add User enters...');
+        const { first_name, last_name, email, password, year, month, day, verification_code,
+            verified, role } = req.body;
+        const hashedPassword = await hashPassword(password);
+        date_of_birth = new Date(year, monthMap[month], day);
+
+        const user = User.create({
+            first_name, last_name, email, password: hashedPassword,
+            date_of_birth, verification_code, verified, role
+        });
+
+        res.json('User added successfuly');
+        console.log('Add User exits...');
+    } catch (error) {
+        console.error('Error adding employee:', error);
+    }
+}
+
+const getClothes = async (req, res) => {
+    try {
+        console.log('getClothes enters...');
+        const items = await Cloth.find({});
+        res.json(items);
+    } catch (error) {
+        console.error('Error fetching clothes:', error);
+    }
+    console.log('getClothes exits...');
+}
+
+const addCloth = async (req, res) => {
+    try {
+        console.log("addCloth enters...")
+        const { name, price, color, material, size, description, quantity, imageUrl, otherImagesUrl } = req.body;
+
+        const exists = await Cloth.findOne({ imageUrl: imageUrl });
+        if (exists) {
+            return res.json({
+                error: 'Cloth already exists'
+            });
+        }
+        const cloth = Cloth.create({
+            name: name,
+            price: price,
+            color: color,
+            material: material,
+            size: size,
+            description: description,
+            quantity: quantity,
+            imageUrl: imageUrl,
+            otherImagesUrl: otherImagesUrl
+        });
+        res.json(req.body);
+    } catch (error) {
+        console.error('Error adding cloth:', error);
+    }
+    console.log("addCloth exits...")
+}
+
 module.exports = {
     test,
     registerUser1,
@@ -234,4 +298,7 @@ module.exports = {
     registerUser5,
     signinUser,
     getProfile,
+    addUser,
+    getClothes,
+    addCloth,
 }
