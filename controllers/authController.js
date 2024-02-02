@@ -2,6 +2,7 @@ const User = require('../models/user');
 const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
 const Cloth = require('../models/cloth');
+const cartListModel = require('../models/cartList');
 
 const monthMap = {
     'January': 0,
@@ -171,6 +172,11 @@ const registerUser5 = async (req, res) => {
             })
         }
         user.verified = true;
+        let cartList = user.cart_list;
+        if (!cartList) {
+            cartList = await cartListModel.create({ title: 'WishList' });
+            user.cart_list = cartList;
+        }
 
         await user.save();
         res.json('valid');
@@ -187,7 +193,7 @@ const signinUser = async (req, res) => {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email: email });
-        if (!user) {
+        if (!user || !user.verified) {
             return res.json({
                 error: 'Incorrect password or email'
             });
@@ -249,46 +255,6 @@ const addUser = async (req, res) => {
     }
 }
 
-const getClothes = async (req, res) => {
-    try {
-        console.log('getClothes enters...');
-        const items = await Cloth.find({});
-        res.json(items);
-    } catch (error) {
-        console.error('Error fetching clothes:', error);
-    }
-    console.log('getClothes exits...');
-}
-
-const addCloth = async (req, res) => {
-    try {
-        console.log("addCloth enters...")
-        const { name, price, color, material, size, description, quantity, imageUrl, otherImagesUrl } = req.body;
-
-        const exists = await Cloth.findOne({ imageUrl: imageUrl });
-        if (exists) {
-            return res.json({
-                error: 'Cloth already exists'
-            });
-        }
-        const cloth = Cloth.create({
-            name: name,
-            price: price,
-            color: color,
-            material: material,
-            size: size,
-            description: description,
-            quantity: quantity,
-            imageUrl: imageUrl,
-            otherImagesUrl: otherImagesUrl
-        });
-        res.json(req.body);
-    } catch (error) {
-        console.error('Error adding cloth:', error);
-    }
-    console.log("addCloth exits...")
-}
-
 module.exports = {
     test,
     registerUser1,
@@ -299,6 +265,4 @@ module.exports = {
     signinUser,
     getProfile,
     addUser,
-    getClothes,
-    addCloth,
 }
