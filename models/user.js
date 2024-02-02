@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 const userSchema = new Schema({
     first_name: String,
@@ -24,7 +25,8 @@ const userSchema = new Schema({
     logged_in: {
         type: Boolean,
         default: false
-    }
+    },
+    cart_list: {type: ObjectId, ref: 'CartList'}
 })
 
 const UserModel = mongoose.model('User', userSchema);

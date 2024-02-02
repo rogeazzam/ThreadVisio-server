@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const { test, registerUser1, registerUser2, registerUser3, registerUser4, 
-    registerUser5, signinUser, getProfile, addUser, getClothes, addCloth} = require('../controllers/authController');
+const { test, registerUser1, registerUser2, registerUser3, registerUser4,
+    registerUser5, signinUser, getProfile, addUser } = require('../controllers/authController');
+const { getClothes, addCloth, getWishlist, addToWishlist,
+    removeFromWishlist } = require('../controllers/clothController');
 
 //middleware
 router.use(
@@ -23,6 +25,9 @@ router.get('/profile', getProfile);
 router.post('/adduser', addUser);
 router.get('/clothes', getClothes);
 router.post('/addcloth', addCloth);
+router.get('/wishlist', getWishlist);
+router.post('/addtowishlist', addToWishlist);
+router.post('/removefromwishlist', removeFromWishlist);
 
 
 module.exports = router;
