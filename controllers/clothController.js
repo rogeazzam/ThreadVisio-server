@@ -18,6 +18,16 @@ const addCloth = async (req, res) => {
         console.log("addCloth enters...")
         const { name, price, color, material, size, description, quantity, imageUrl, otherImagesUrl } = req.body;
 
+        const user = await getUserFromToken(req, res);
+        if (!user) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        if (user.role === 'customer') {
+            return res.json({
+                error: 'No Access'
+            });
+        }
+
         const exists = await Cloth.findOne({ imageUrl: imageUrl });
         if (exists) {
             return res.json({
@@ -35,7 +45,9 @@ const addCloth = async (req, res) => {
             imageUrl: imageUrl,
             otherImagesUrl: otherImagesUrl
         });
-        res.json(req.body);
+
+        const clothItem = await Cloth.findOne({ imageUrl: imageUrl });
+        res.json(clothItem);
     } catch (error) {
         console.error('Error adding cloth:', error);
     }
