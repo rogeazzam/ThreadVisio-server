@@ -34,7 +34,7 @@ const addCloth = async (req, res) => {
                 error: 'Cloth already exists'
             });
         }
-        const cloth = Cloth.create({
+        const cloth = await Cloth.create({
             name: name,
             price: price,
             color: color,
