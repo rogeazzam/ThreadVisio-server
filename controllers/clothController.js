@@ -113,8 +113,6 @@ const removeFromWishlist = async (req, res) => {
 
         let cartList = user.cart_list;
         const clothToFind = await Cloth.findOne({ imageUrl: cloth_data.imageUrl });
-        console.log(clothToFind._id);
-        console.log(cartList.cloths)
         for (let i = 0; i < cartList.cloths.length; i++) {
             const currentCloth = await Cloth.findById(cartList.cloths[i]);
             if (currentCloth.imageUrl === clothToFind.imageUrl) {

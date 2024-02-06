@@ -17,6 +17,7 @@ app.use(express.static('public'));
 
 app.use('/', require('./routes/authRoutes'));
 app.use('/files', require('./routes/fileRoutes'));
+app.use('/openai', require('./routes/openaiRoutes'))
 
 const port = 8000
 app.listen(port, () => console.log(`Server is running on port ${port}`))
