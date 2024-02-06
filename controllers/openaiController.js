@@ -5,6 +5,7 @@ const openai = new OpenAI({
 });
 
 const ClothIdea = require('../models/clothIdea');
+const { getUserFromToken } = require('../helpers/auth');
 
 const generateImage = async (req, res) => {
     try {
@@ -53,14 +54,14 @@ const submitImage = async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const clothIdea = ClothIdea.create({
+        const clothIdea = await ClothIdea.create({
             frontImageUrl: frontImageUrl,
             backImageUrl: backImageUrl,
             user: user._id
         });
 
         res.json({
-            data: "Image submitted"
+            data: "Images submitted"
         })
     } catch (error) {
         if (error.response) {
