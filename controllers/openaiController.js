@@ -53,7 +53,7 @@ const submitImage = async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const ClothIdea = ClothIdea.create({
+        const clothIdea = ClothIdea.create({
             frontImageUrl: frontImageUrl,
             backImageUrl: backImageUrl,
             user: user._id
